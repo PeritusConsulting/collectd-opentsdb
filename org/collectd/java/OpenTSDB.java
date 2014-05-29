@@ -1,3 +1,23 @@
+//
+// Forked from https://github.com/auxesis/collectd-opentsdb
+//
+//  javac -classpath /opt/collectd/share/collectd/java/collectd-api.jar /opt/collectd/OpenTSDB.java
+//
+//  LoadPlugin java
+//  <Plugin java>
+//    JVMArg "-Djava.class.path=/opt/collectd/share/collectd/java/collectd-api.jar:/opt/collectd/"
+//
+//    LoadPlugin "OpenTSDB"
+//    <Plugin "OpenTSDB">
+//      Server "opentsdb.hbreiband.no" "4242"
+//    </Plugin>
+//  </Plugin>
+//
+//
+//
+//
+
+
 package org.collectd.java;
 
 import java.util.ArrayList;
@@ -76,7 +96,7 @@ public class OpenTSDB implements CollectdWriteInterface,
         // Metric name
         String    name, pointName,
                   plugin, pluginInstance,
-                  type, typeInstance;
+                  type, typeInstance, host;
         ArrayList<String> parts = new ArrayList<String>();
         ArrayList<String> tags = new ArrayList<String>();
 
@@ -84,10 +104,12 @@ public class OpenTSDB implements CollectdWriteInterface,
         pluginInstance = vl.getPluginInstance();
         type           = vl.getType();
         typeInstance   = vl.getTypeInstance();
+        host           = vl.getHost();
 
         // Collectd.logInfo("plugin: " + plugin + " pluginInstance: " + pluginInstance + " type: " + type + " typeInstance: " + typeInstance);
 
         // FIXME: refactor to switch?
+        /*
         if ( plugin != null && !plugin.isEmpty() ) {
             parts.add(plugin);
             if ( pluginInstance != null && !pluginInstance.isEmpty() ) {
@@ -106,6 +128,35 @@ public class OpenTSDB implements CollectdWriteInterface,
               tags.add(plugin + "_point=" + pointName);
             }
         }
+        */
+
+        if ( plugin != null && !plugin.isEmpty() ) {
+            //parts.add(plugin); // Only "snmp" for snmp plugin, largely useless
+
+            //if ( pluginInstance != null && !pluginInstance.isEmpty() ) {
+            //    parts.add(pluginInstance); // Usually empty for SNMP plugin
+            //}
+
+            //if ( type != null && !type.isEmpty()) {
+            //    tags.add(plugin + "_type=" + type); // Equals the snmp data type, instead we just use the snmp data point (ifHCInOctets for example)
+            //}
+
+            pointName = ds.get(i).getName();
+            if (!pointName.equals("value")) {
+              // Collectd.logInfo("pointName: " + pointName);
+              parts.add(pointName);
+            }
+
+            parts.add(host);
+
+            if ( typeInstance != null && !typeInstance.isEmpty() ) {
+                parts.add(typeInstance); // The object/interface
+            }
+
+
+        }
+
+
 
         name = join(parts, ".");
 
@@ -120,11 +171,11 @@ public class OpenTSDB implements CollectdWriteInterface,
         sb.append(val).append(' ');
 
         // Host
-        String host = vl.getHost();
+        //String host = vl.getHost();
         sb.append("host=").append(host).append(" ");
 
         // Meta
-        sb.append("source=collectd");
+        //sb.append("source=collectd");
 
         sb.append(" ").append(join(tags, " "));
 

@@ -1,7 +1,8 @@
 collectd-opentsdb
 =================
 
-collectd writer plugin for OpenTSDB.
+collectd writer plugin for OpenTSDB with type_instance and plugin_instance 
+shifted to metric in order to increase cardinality and performance.
 
 Install
 -------
@@ -9,7 +10,7 @@ Install
     # Install collectd.
     apt-get install collectd
     # Clone the plugin repo.
-    git clone git://github.com/auxesis/collectd-opentsdb.git
+    git clone git://github.com/PeritusConsulting/collectd-opentsdb.git
     # Compile the plugin
     cd collectd-opentsdb
     javac -classpath /usr/share/collectd-core/java/collectd-api.jar org/collectd/java/OpenTSDB.java
